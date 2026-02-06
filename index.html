@@ -27,11 +27,13 @@
             text-align: center;
         }
 
-        p {
+        .instruction {
             color: #6a0d2f;
             font-weight: bold;
             text-align: center;
             padding: 0 20px;
+            max-width: 400px;
+            margin-bottom: 10px;
         }
 
         .container {
@@ -100,6 +102,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             animation: fadeIn 0.5s;
             text-align: center;
+            max-width: 80%;
         }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -108,10 +111,9 @@
 <body>
 
     <h1>Verito Aguas</h1>
-    <p>💝 ¡Gira la ruleta de San Valentín y descubre tu premio! 💝<br>
-    <small>(Toma captura de pantalla al finalizar)</small></p>
+    <div id="header-text" class="instruction">💝 ¡Gira para ganar tu premio de San Valentín! 💝</div>
 
-    <div class="container">
+    <div class="container" id="wheel-container">
         <canvas id="wheel"></canvas>
         <button id="spin-btn">GIRAR</button>
     </div>
@@ -123,20 +125,28 @@
         const ctx = canvas.getContext('2d');
         const spinBtn = document.getElementById('spin-btn');
         const resultDiv = document.getElementById('result');
+        const headerText = document.getElementById('header-text');
 
+        // PREMIOS ACTUALIZADOS SEGÚN TU LISTA
         const prizes = [
-            "Video 1 min 🎥", "Foto exclusiva 📸", "Audio hot 🎙️", 
-            "Chat 5 min 💬", "Pack San Valentín 🎁", "Descuento 50% 🏷️",
-            "Sexting rápido 🔥", "Foto de pies 🦶"
+            "3 Videos 🎥", 
+            "5 Videos 🎞️", 
+            "1 Sexting Gratis 🔥", 
+            "Calif. Audio 🎙️", 
+            "Calif. Video 📹", 
+            "3 Lives Grabados 📺", 
+            "Set Fotos Explícitas 📸", 
+            "1 Audio 2min 🎧", 
+            "3 Audios 2min 🎤"
         ];
         
-        const colors = ["#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1", "#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1"];
+        const colors = ["#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1", "#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1", "#ff4d6d"];
         
         let size = 350;
         canvas.width = size;
         canvas.height = size;
         let center = size / 2;
-        let arc = Math.PI / (prizes.length / 2);
+        let arc = (2 * Math.PI) / prizes.length;
 
         function drawWheel() {
             prizes.forEach((prize, i) => {
@@ -153,41 +163,51 @@
                 ctx.rotate(angle + arc / 2);
                 ctx.textAlign = "right";
                 ctx.fillStyle = "#fff";
-                ctx.font = "bold 14px Poppins";
-                ctx.fillText(prize, center - 20, 10);
+                ctx.font = "bold 12px Poppins";
+                ctx.fillText(prize, center - 15, 5);
                 ctx.restore();
             });
         }
 
         drawWheel();
 
-        if (localStorage.getItem('hasSpun')) {
+        // SISTEMA DE ENLACES ÚNICOS
+        const urlParams = new URLSearchParams(window.location.search);
+        const ticketId = urlParams.get('id');
+
+        // Si no hay ID en el link, no deja girar
+        if (!ticketId) {
             spinBtn.disabled = true;
-            spinBtn.innerText = "Listo";
+            headerText.innerHTML = "❌ Enlace no válido. Pide tu link personal.";
+        } 
+        // Si el ID ya se usó en este navegador, muestra el premio que ganó
+        else if (localStorage.getItem('used_ticket_' + ticketId)) {
+            spinBtn.disabled = true;
+            headerText.innerHTML = "🚫 Este giro ya fue utilizado.";
             resultDiv.style.display = "block";
-            resultDiv.innerHTML = "Ya reclamaste tu premio: <br><strong>" + localStorage.getItem('myPrize') + "</strong>";
+            resultDiv.innerHTML = "Ya ganaste: <br><strong>" + localStorage.getItem('prize_' + ticketId) + "</strong>";
         }
 
         spinBtn.addEventListener('click', () => {
-            if (localStorage.getItem('hasSpun')) return;
+            if (localStorage.getItem('used_ticket_' + ticketId)) return;
 
             let extraDegrees = Math.floor(Math.random() * 360) + 3600; 
             canvas.style.transform = `rotate(${extraDegrees}deg)`;
             spinBtn.disabled = true;
 
             setTimeout(() => {
-                let actualDegree = (extraDegrees % 360);
+                let actualDegree = extraDegrees % 360;
                 let prizeIndex = Math.floor((360 - actualDegree) / (360 / prizes.length)) % prizes.length;
                 let wonPrize = prizes[prizeIndex];
 
-                localStorage.setItem('hasSpun', 'true');
-                localStorage.setItem('myPrize', wonPrize);
+                // Guardar que este ticket específico ya se usó
+                localStorage.setItem('used_ticket_' + ticketId, 'true');
+                localStorage.setItem('prize_' + ticketId, wonPrize);
 
                 resultDiv.style.display = "block";
-                resultDiv.innerHTML = `✨ ¡FELICIDADES! ✨<br>Ganaste: <strong>${wonPrize}</strong><br>📸 Toma captura y envíamela por DM.`;
+                resultDiv.innerHTML = `✨ ¡FELICIDADES! ✨<br>Ganaste: <strong>${wonPrize}</strong><br>📸 Toma captura y envíala con el ID: ${ticketId}`;
             }, 4000);
         });
     </script>
 </body>
-
 </html>
