@@ -15,11 +15,10 @@
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-            overflow: hidden; /* Evita scroll por los corazones */
+            overflow: hidden;
             position: relative;
         }
 
-        /* Estilos para los corazones animados */
         .heart-bg {
             position: absolute;
             bottom: -50px;
@@ -64,10 +63,11 @@
             z-index: 1;
         }
 
+        /* El marcador (corazón) indica el ganador arriba */
         .container::before {
             content: '❤️';
             position: absolute;
-            top: -20px;
+            top: -25px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 10;
@@ -153,16 +153,12 @@
             heart.style.animationDuration = Math.random() * 3 + 3 + "s";
             heart.style.opacity = Math.random();
             heart.style.fontSize = Math.random() * 20 + 10 + "px";
-            
             document.body.appendChild(heart);
-            
-            setTimeout(() => {
-                heart.remove();
-            }, 6000);
+            setTimeout(() => { heart.remove(); }, 6000);
         }
         setInterval(createHeart, 300);
 
-        // --- LÓGICA DE LA RULETA ---
+        // --- LÓGICA DE LA RULETA CORREGIDA ---
         const canvas = document.getElementById('wheel');
         const ctx = canvas.getContext('2d');
         const spinBtn = document.getElementById('spin-btn');
@@ -173,11 +169,11 @@
             "3 Videos 🎥", 
             "5 Videos 🎞️", 
             "1 Sexting Gratis 🔥", 
-            "1 calificacion de su verga gratis en audio🎙️", 
-            "1 Calificacion de su verga gratis en video 📹", 
-            "acceso a la grabacion de sus ultimos 3 lives  📺", 
-            "1 set de fotos explicitas 📸", 
-            "3 audios sexuales de 2 minutos 🎧"
+            "Calif. verga Audio🎙️", 
+            "Calif. verga Video 📹", 
+            "Grabación 3 Lives 📺", 
+            "Fotos Explícitas 📸", 
+            "Audio Sexual 2m 🎧"
         ];
         
         const colors = ["#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1", "#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1"];
@@ -204,7 +200,6 @@
                 ctx.textAlign = "right";
                 ctx.fillStyle = "#fff";
                 ctx.font = "bold 13px Poppins";
-                // Acorté un poco los textos largos solo para que quepan mejor visualmente
                 ctx.fillText(prize, center - 20, 10);
                 ctx.restore();
             });
@@ -228,13 +223,17 @@
         spinBtn.addEventListener('click', () => {
             if (localStorage.getItem('used_' + ticketId)) return;
 
-            let extraDegrees = Math.floor(Math.random() * 360) + 3600; 
-            canvas.style.transform = `rotate(${extraDegrees}deg)`;
+            let randomRotation = Math.floor(Math.random() * 360);
+            let totalRotation = 3600 + randomRotation; // 10 vueltas + random
+            
+            canvas.style.transform = `rotate(${totalRotation}deg)`;
             spinBtn.disabled = true;
 
             setTimeout(() => {
-                let actualDegree = extraDegrees % 360;
-                let prizeIndex = Math.floor((360 - actualDegree) / (360 / prizes.length)) % prizes.length;
+                // Cálculo corregido para que el premio ganador sea el de arriba (12 en punto)
+                // Se resta 90 grados para compensar que el dibujo empieza a las 3 en punto
+                let actualAngle = (totalRotation % 360);
+                let prizeIndex = Math.floor(((360 - actualAngle + 270) % 360) / (360 / prizes.length));
                 let wonPrize = prizes[prizeIndex];
 
                 localStorage.setItem('used_' + ticketId, 'true');
