@@ -111,9 +111,9 @@
 <body>
 
     <h1>Verito Aguas</h1>
-    <div id="header-text" class="instruction">💝 ¡Gira para ganar tu premio de San Valentín! 💝</div>
+    <div id="header-text" class="instruction">💝 ¡Gira para ganar tu premio! 💝</div>
 
-    <div class="container" id="wheel-container">
+    <div class="container">
         <canvas id="wheel"></canvas>
         <button id="spin-btn">GIRAR</button>
     </div>
@@ -127,20 +127,19 @@
         const resultDiv = document.getElementById('result');
         const headerText = document.getElementById('header-text');
 
-        // PREMIOS ACTUALIZADOS SEGÚN TU LISTA
+        // AQUÍ AGREGAS TUS 8 PREMIOS
         const prizes = [
             "3 Videos 🎥", 
             "5 Videos 🎞️", 
-            "1 Sexting Gratis 🔥", 
+            "Sexting Gratis 🔥", 
             "Calif. Audio 🎙️", 
             "Calif. Video 📹", 
-            "3 Lives Grabados 📺", 
-            "Set Fotos Explícitas 📸", 
-            "1 Audio 2min 🎧", 
-            "3 Audios 2min 🎤"
+            "3 Lives 📺", 
+            "Set Fotos 📸", 
+            "Audios 2min 🎧"
         ];
         
-        const colors = ["#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1", "#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1", "#ff4d6d"];
+        const colors = ["#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1", "#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1"];
         
         let size = 350;
         canvas.width = size;
@@ -163,33 +162,29 @@
                 ctx.rotate(angle + arc / 2);
                 ctx.textAlign = "right";
                 ctx.fillStyle = "#fff";
-                ctx.font = "bold 12px Poppins";
-                ctx.fillText(prize, center - 15, 5);
+                ctx.font = "bold 13px Poppins";
+                ctx.fillText(prize, center - 20, 10);
                 ctx.restore();
             });
         }
 
         drawWheel();
 
-        // SISTEMA DE ENLACES ÚNICOS
         const urlParams = new URLSearchParams(window.location.search);
         const ticketId = urlParams.get('id');
 
-        // Si no hay ID en el link, no deja girar
         if (!ticketId) {
             spinBtn.disabled = true;
-            headerText.innerHTML = "❌ Enlace no válido. Pide tu link personal.";
-        } 
-        // Si el ID ya se usó en este navegador, muestra el premio que ganó
-        else if (localStorage.getItem('used_ticket_' + ticketId)) {
+            headerText.innerHTML = "❌ Enlace inválido. Pide uno nuevo.";
+        } else if (localStorage.getItem('used_' + ticketId)) {
             spinBtn.disabled = true;
-            headerText.innerHTML = "🚫 Este giro ya fue utilizado.";
+            headerText.innerHTML = "🚫 Este link ya se usó.";
             resultDiv.style.display = "block";
-            resultDiv.innerHTML = "Ya ganaste: <br><strong>" + localStorage.getItem('prize_' + ticketId) + "</strong>";
+            resultDiv.innerHTML = "Premio ganado: <br><strong>" + localStorage.getItem('p_' + ticketId) + "</strong>";
         }
 
         spinBtn.addEventListener('click', () => {
-            if (localStorage.getItem('used_ticket_' + ticketId)) return;
+            if (localStorage.getItem('used_' + ticketId)) return;
 
             let extraDegrees = Math.floor(Math.random() * 360) + 3600; 
             canvas.style.transform = `rotate(${extraDegrees}deg)`;
@@ -200,12 +195,11 @@
                 let prizeIndex = Math.floor((360 - actualDegree) / (360 / prizes.length)) % prizes.length;
                 let wonPrize = prizes[prizeIndex];
 
-                // Guardar que este ticket específico ya se usó
-                localStorage.setItem('used_ticket_' + ticketId, 'true');
-                localStorage.setItem('prize_' + ticketId, wonPrize);
+                localStorage.setItem('used_' + ticketId, 'true');
+                localStorage.setItem('p_' + ticketId, wonPrize);
 
                 resultDiv.style.display = "block";
-                resultDiv.innerHTML = `✨ ¡FELICIDADES! ✨<br>Ganaste: <strong>${wonPrize}</strong><br>📸 Toma captura y envíala con el ID: ${ticketId}`;
+                resultDiv.innerHTML = `✨ ¡GANASTE! ✨<br><strong>${wonPrize}</strong><br>📸 Captura con ID: ${ticketId}`;
             }, 4000);
         });
     </script>
