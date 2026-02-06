@@ -15,7 +15,25 @@
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-            overflow-x: hidden;
+            overflow: hidden; /* Evita scroll por los corazones */
+            position: relative;
+        }
+
+        /* Estilos para los corazones animados */
+        .heart-bg {
+            position: absolute;
+            bottom: -50px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 20px;
+            user-select: none;
+            pointer-events: none;
+            animation: moveUp 6s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes moveUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
         }
 
         h1 {
@@ -25,6 +43,7 @@
             font-size: 2.5rem;
             margin-bottom: 10px;
             text-align: center;
+            z-index: 1;
         }
 
         .instruction {
@@ -34,6 +53,7 @@
             padding: 0 20px;
             max-width: 400px;
             margin-bottom: 10px;
+            z-index: 1;
         }
 
         .container {
@@ -41,6 +61,7 @@
             width: 350px;
             height: 350px;
             margin: 20px;
+            z-index: 1;
         }
 
         .container::before {
@@ -60,6 +81,7 @@
             border: 8px solid #fff;
             box-shadow: 0 0 20px rgba(0,0,0,0.2);
             transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
+            background-color: white;
         }
 
         #spin-btn {
@@ -103,6 +125,7 @@
             animation: fadeIn 0.5s;
             text-align: center;
             max-width: 80%;
+            z-index: 1;
         }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -121,22 +144,40 @@
     <div id="result" class="result-msg"></div>
 
     <script>
+        // --- EFECTO DE CORAZONES FLOTANTES ---
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart-bg');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + "vw";
+            heart.style.animationDuration = Math.random() * 3 + 3 + "s";
+            heart.style.opacity = Math.random();
+            heart.style.fontSize = Math.random() * 20 + 10 + "px";
+            
+            document.body.appendChild(heart);
+            
+            setTimeout(() => {
+                heart.remove();
+            }, 6000);
+        }
+        setInterval(createHeart, 300);
+
+        // --- LÓGICA DE LA RULETA ---
         const canvas = document.getElementById('wheel');
         const ctx = canvas.getContext('2d');
         const spinBtn = document.getElementById('spin-btn');
         const resultDiv = document.getElementById('result');
         const headerText = document.getElementById('header-text');
 
-        // TUS 8 PREMIOS
         const prizes = [
-            "3 Videos  🎥", 
+            "3 Videos 🎥", 
             "5 Videos 🎞️", 
             "1 Sexting Gratis 🔥", 
             "1 calificacion de su verga gratis en audio🎙️", 
-            "1 Calificacion de su verga gratis en video  📹", 
-            "acceso a la grabacion de mis ultimos 3 lives  📺", 
+            "1 Calificacion de su verga gratis en video 📹", 
+            "acceso a la grabacion de sus ultimos 3 lives  📺", 
             "1 set de fotos explicitas 📸", 
-            "1 audio sexual de 2 minutos  🎧"
+            "3 audios sexuales de 2 minutos 🎧"
         ];
         
         const colors = ["#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1", "#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1"];
@@ -163,6 +204,7 @@
                 ctx.textAlign = "right";
                 ctx.fillStyle = "#fff";
                 ctx.font = "bold 13px Poppins";
+                // Acorté un poco los textos largos solo para que quepan mejor visualmente
                 ctx.fillText(prize, center - 20, 10);
                 ctx.restore();
             });
@@ -199,7 +241,6 @@
                 localStorage.setItem('p_' + ticketId, wonPrize);
 
                 resultDiv.style.display = "block";
-                // MENSAJE ACTUALIZADO SEGÚN TU SOLICITUD
                 resultDiv.innerHTML = `✨ ¡GANASTE! ✨<br><strong>${wonPrize}</strong><br>📸 Toma captura de tu premio y envíalo a mi ONLYFANS`;
             }, 4000);
         });
