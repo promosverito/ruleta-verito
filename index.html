@@ -127,16 +127,16 @@
         const resultDiv = document.getElementById('result');
         const headerText = document.getElementById('header-text');
 
-        // AQUÍ AGREGAS TUS 8 PREMIOS
+        // TUS 8 PREMIOS
         const prizes = [
-            "3 Videos 🎥", 
+            "3 Videos  🎥", 
             "5 Videos 🎞️", 
             "1 Sexting Gratis 🔥", 
-            "Calificacion de su verga gratis en Audio 🎙️", 
-            "Calificacion de su verga gratis en Video 📹", 
-            "acceso a la grabacion de mis ultimos 3 Lives 📺", 
-            "Set Fotos explicitas📸", 
-            "3 audios sexuales de 2min 🎧"
+            "1 calificacion de su verga gratis en audio🎙️", 
+            "1 Calificacion de su verga gratis en video  📹", 
+            "acceso a la grabacion de mis ultimos 3 lives  📺", 
+            "1 set de fotos explicitas 📸", 
+            "1 audio sexual de 2 minutos  🎧"
         ];
         
         const colors = ["#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1", "#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1"];
@@ -199,10 +199,10 @@
                 localStorage.setItem('p_' + ticketId, wonPrize);
 
                 resultDiv.style.display = "block";
-                resultDiv.innerHTML = `✨ ¡GANASTE! ✨<br><strong>${wonPrize}</strong><br>📸 Captura con ID: ${ticketId}`;
+                // MENSAJE ACTUALIZADO SEGÚN TU SOLICITUD
+                resultDiv.innerHTML = `✨ ¡GANASTE! ✨<br><strong>${wonPrize}</strong><br>📸 Toma captura de tu premio y envíalo a mi ONLYFANS`;
             }, 4000);
         });
     </script>
 </body>
 </html>
-
